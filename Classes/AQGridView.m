@@ -608,6 +608,8 @@ NSString * const AQGridViewSelectionDidChangeNotification = @"AQGridViewSelectio
 {
 	for ( AQGridViewCell * cell in reusableCells )
 	{
+        if (cell.reuseIdentifier == nil)
+            continue;
 		NSMutableSet * reuseSet = [_reusableGridCells objectForKey: cell.reuseIdentifier];
 		if ( reuseSet == nil )
 		{
@@ -1060,7 +1062,18 @@ NSString * const AQGridViewSelectionDidChangeNotification = @"AQGridViewSelectio
 
 	NSArray *visibleCells = [self visibleCells];
 	for (AQGridViewCell *aCell in visibleCells) {
-		[aCell setEditing:editing animated:animated];
+        if (!editing) {
+            [aCell setEditing:editing animated:animated];
+            continue;
+        }
+        BOOL shouldSetEditing = YES;
+        if (self.delegate && [self.delegate respondsToSelector:@selector(gridView:editingStyleForRowAtIndex:)]) {
+            NSUInteger index = [self indexForCell:aCell];
+            UITableViewCellEditingStyle style = [self.delegate gridView:self editingStyleForRowAtIndex:index];
+            shouldSetEditing = (style != UITableViewCellEditingStyleNone);
+        }
+        if (shouldSetEditing)
+            [aCell setEditing:editing animated:animated];
 	}
 }
 
@@ -2127,7 +2140,12 @@ passToSuper:
 	[UIView setAnimationsEnabled: NO];
 	AQGridViewCell * cell = [_dataSource gridView: self cellForItemAtIndex: index];
 	cell.separatorStyle = _flags.separatorStyle;
-	cell.editing = self.editing;
+    BOOL shouldSetEditing = YES;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(gridView:editingStyleForRowAtIndex:)]) {
+        UITableViewCellEditingStyle style = [self.delegate gridView:self editingStyleForRowAtIndex:index];
+        shouldSetEditing = (style != UITableViewCellEditingStyleNone);
+    }
+	cell.editing = (shouldSetEditing && self.editing);
 	cell.displayIndex = index;
 
 	cell.frame = [self fixCellFrame: cell.frame forGridRect: [gridData cellRectAtIndex: index]];
