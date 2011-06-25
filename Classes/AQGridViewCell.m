@@ -300,12 +300,14 @@
 
 - (void) _beginBackgroundHighlight: (BOOL) highlightOn animated: (BOOL) animated
 {
+    NSString *imageName = nil;
 	if ( (_cellFlags.usingDefaultSelectedBackgroundView == 1) && (_selectedBackgroundView == nil) )
 	{
         NSString *imageName = nil;
 #ifdef BUILTIN_IMAGES
 		unsigned char * pngBytes = AQGridSelection_png;
 		NSUInteger pngLength = AQGridSelection_png_len;
+
 
 		switch ( _cellFlags.selectionStyle )
 		{
