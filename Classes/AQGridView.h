@@ -89,6 +89,7 @@ typedef enum {
 - (CGRect) gridView: (AQGridView *) gridView adjustCellFrame: (CGRect) cellFrame withinGridCellFrame: (CGRect) gridCellFrame;
 
 // Editing
+- (UITableViewCellEditingStyle)gridView:(AQGridView *)aGridView editingStyleForRowAtIndex:(NSUInteger)index;
 - (void)gridView:(AQGridView *)aGridView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndex:(NSUInteger)index;
 
 @end
